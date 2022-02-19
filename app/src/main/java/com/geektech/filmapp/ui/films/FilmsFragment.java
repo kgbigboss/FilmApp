@@ -5,6 +5,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,14 +25,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class FilmsFragment extends Fragment implements OnItemClick<String> {
+public class FilmsFragment extends Fragment implements OnItemClick {
     private FragmentFilmsBinding binding;
     public FilmsAdapter adapter;
-
-    public FilmsFragment(){
-
-    }
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,18 +56,40 @@ public class FilmsFragment extends Fragment implements OnItemClick<String> {
                 }else {
                     Log.e("TAG","onResponse" + response.errorBody().toString());
                 }
+
             }
 
             @Override
             public void onFailure(Call<List<Film>> call, Throwable t) {
-                Log.e("TAG","onResponse" + t.getLocalizedMessage());
 
             }
         });
+
+
     }
 
     @Override
-    public void onItemClick(String data) {
-        Log.e("TAG","onResponse" + data);
+    public void onItemClick(Film film, String id) {
+        App.api.getFilmById(id).enqueue(new Callback<Film>() {
+            @Override
+            public void onResponse(Call<Film> call, Response<Film> response) {
+                if (response.isSuccessful() && response.body() != null){
+                    NavController navController = Navigation.findNavController(
+                            requireActivity(),R.id.nav_host_fragment);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("image",film.getMovieBanner());
+                    bundle.putString("title", film.getTitle());
+                    bundle.putString("director", film.getDirector());
+                    bundle.putString("producer", film.getProducer());
+                    bundle.putString("release_date", film.getReleaseDate());
+                    navController.navigate(R.id.filmDetaliFragment,bundle);
+            }
+            }
+
+            @Override
+            public void onFailure(Call<Film> call, Throwable t) {
+
+            }
+        });
     }
 }

@@ -39,12 +39,7 @@ public class FilmsAdapter extends RecyclerView.Adapter<FilmsAdapter.FilmsViewHol
     @Override
     public void onBindViewHolder(@NonNull FilmsViewHolder holder, int position) {
         holder.onBind(films.get(position));
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listener.onItemClick(films.get(holder.getAdapterPosition()).getId());
-            }
-        });
+
 
     }
 
@@ -65,6 +60,12 @@ public class FilmsAdapter extends RecyclerView.Adapter<FilmsAdapter.FilmsViewHol
         public void onBind(Film film) {
             binding.tvTitle.setText(film.getTitle());
             binding.tvDescription.setText(film.getDescription());
+            binding.getRoot().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    listener.onItemClick(film,film.getId());
+                }
+            });
         }
     }
 
